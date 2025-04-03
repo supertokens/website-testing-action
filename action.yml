@@ -30,10 +30,27 @@ inputs:
     required: false
     default: 'false'
 
+  start-cross-domain-server:
+    description: Start the cross domain server from the test/server directory. Required for testing supertokens-website itself.
+    required: false
+    default: 'false'
+
+  should-clone:
+    description: Whether the `supertokens-website` repo should be cloned. `false` for testing supertokens-website itself.
+    required: false
+    default: 'true'
+
 runs:
   using: composite
 
   steps:
+    - if: ${{ inputs.should-clone }}
+      uses: actions/checkout@v4
+      with:
+        repository: supertokens/supertokens-website
+        ref: ${{ inputs.version }}
+        path: ${{ inputs.path }}
+
     # Sets the required envs and NODE_PORT value according to requirements.
     # SDK tests run the test server on 8081
     # supertokens-website tests use the same server as both app and test on 8080
@@ -71,6 +88,10 @@ runs:
         npm i
 
         node . &
+
+        if [ "${{ inputs.start-cross-domain-server }}" == 'true' ]; then
+          NODE_PORT=8082 node . &
+        fi
 
     - name: Run tests
       working-directory: ${{ inputs.path }}
