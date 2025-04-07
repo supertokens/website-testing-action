@@ -122,7 +122,3 @@ runs:
         require_tests: true
         # Fail the build in case of a test failure.
         fail_on_failure: true
-
-    - name: Setup tmate session
-      if: always()
-      uses: mxschmitt/action-tmate@v3
