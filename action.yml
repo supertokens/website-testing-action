@@ -105,7 +105,7 @@ runs:
       shell: bash
       # Doing it in the shell since the Reporter's `transformers` don't seem to work
       # run: sed -i "s|$GITHUB_WORKSPACE/${{ inputs.path }}/test||g" test-results.xml
-      run: sed -i "s|${{ github.workspace }}/${{ inputs.path }}/test||g" test-results.xml
+      run: sed -i "s|${{ github.workspace }}/${{ inputs.path }}/test||g" test-report/test-results.xml
 
     - if: always()
       name: Reporter
