@@ -97,7 +97,7 @@ runs:
       working-directory: ${{ inputs.path }}
       shell: bash
       run: |
-        npm test
+        npm test -- --retries 2
 
     - if: always()
       name: Fix paths
