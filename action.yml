@@ -93,8 +93,6 @@ runs:
           NODE_PORT=8082 node . &
         fi
 
-    - uses: mxschmitt/action-tmate@v3
-
     - name: Run tests
       working-directory: ${{ inputs.path }}
       shell: bash
