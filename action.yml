@@ -118,7 +118,7 @@ runs:
         wait-for $CROSS_DOMAIN_APP_SERVER "cross-domain app server"
         if [ "${{ inputs.use-common-app-and-test-server }}" == 'false' ]; then
           wait-for $TEST_SERVER "test server"
-        else
+        fi
 
     - name: Run tests
       working-directory: ${{ inputs.path }}
