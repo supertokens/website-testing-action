@@ -93,6 +93,33 @@ runs:
           NODE_PORT=8082 node . &
         fi
 
+    - name: Wait for servers
+      env:
+        APP_SERVER: 8080
+        CROSS_DOMAIN_APP_SERVER: 8082
+        TEST_SERVER: 8081
+      shell: bash
+      run: |
+        function wait-for() {
+          timeout=90
+
+          until [ $timeout -le 0 ] || (curl -s localhost:$1 &> /dev/null); do
+            echo "Waiting for $2 (${1}) [${timeout}s remaining]"
+            sleep 5
+            timeout=$(( timeout - 5 ))
+          done
+
+          if [ $timeout -le 0 ]; then
+            return 1
+          fi
+        }
+
+        wait-for $APP_SERVER "app server"
+        wait-for $CROSS_DOMAIN_APP_SERVER "cross-domain app server"
+        if [ "${{ inputs.use-common-app-and-test-server }}" == 'false' ]; then
+          wait-for $TEST_SERVER "test server"
+        else
+
     - name: Run tests
       working-directory: ${{ inputs.path }}
       shell: bash
