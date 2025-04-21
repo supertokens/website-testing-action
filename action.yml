@@ -143,9 +143,13 @@ runs:
         check_name: Website Tests ${{ inputs.check-name-suffix }}
         # Include table with all test results in the summary
         detailed_summary: true
+        # Skips the summary table if only successful tests were detected.
+        skip_success_summary: true
         # Group the testcases by test suite in the detailed_summary
         group_suite: true
-        # Fail if no test are found.
+        # Don't fail if no test are found.
         require_tests: true
         # Fail the build in case of a test failure.
         fail_on_failure: true
+        # No annotations will be added to the run
+        skip_annotations: true
