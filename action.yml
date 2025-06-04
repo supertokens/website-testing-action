@@ -72,8 +72,8 @@ runs:
         fi
 
         REPORT_DIR=${{ github.workspace }}/${{ inputs.path }}/test-report
-        APP_SERVER_LOG_DIR=${{ github.workspace }}/${{ inputs.path }}/test_report/logs/app-server
-        TEST_SERVER_LOG_DIR=${{ github.workspace }}/${{ inputs.path }}/test_report/logs/test-server
+        APP_SERVER_LOG_DIR=${{ github.workspace }}/${{ inputs.path }}/test-report/logs/app-server
+        TEST_SERVER_LOG_DIR=${{ github.workspace }}/${{ inputs.path }}/test-report/logs/test-server
 
         echo "REPORT_DIR=$REPORT_DIR" | tee -a "$GITHUB_OUTPUT" "$GITHUB_ENV"
         echo "APP_SERVER_LOG_DIR=$APP_SERVER_LOG_DIR" | tee -a "$GITHUB_OUTPUT" "$GITHUB_ENV"
