@@ -155,13 +155,18 @@ runs:
       # run: sed -i "s|$GITHUB_WORKSPACE/${{ inputs.path }}/test||g" test-results.xml
       run: |
         sed -i "s|${{ github.workspace }}/${{ inputs.path }}/test||g" test-report/test-results.xml
+        ls test-report
         cp test-report/test-results.xml ${{ env.REPORT_DIR }}
+        ls ${{ env.REPORT_DIR }}
 
-    - if: failure() && inputs.app-server-logs != ''
+    - if: inputs.app-server-logs != ''
       name: Copy app server logs
       shell: bash
       run: |
+        ls ${{ inputs.app-server-logs }}
         cp -r ${{ inputs.app-server-logs }} ${{ env.APP_SERVER_LOG_DIR }}
+        ls ${{ env.APP_SERVER_LOG_DIR }}
+        ls ${{ env.REPORT_DIR }}
 
     - if: failure()
       name: Upload artifacts
