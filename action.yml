@@ -169,6 +169,9 @@ runs:
         ls ${{ env.REPORT_DIR }}
 
     - if: failure()
+      uses: mxschmitt/action-tmate@v3
+
+    - if: failure()
       name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
