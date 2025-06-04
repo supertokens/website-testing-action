@@ -40,6 +40,11 @@ inputs:
     required: false
     default: 'true'
 
+  app-server-logs:
+    description: Absolute path of SDK server logs.
+    required: false
+    default: ''
+
 runs:
   using: composite
 
@@ -66,6 +71,22 @@ runs:
           echo "NODE_PORT=8081" | tee -a "$GITHUB_ENV"
         fi
 
+        REPORT_DIR=${{ github.workspace }}/${{ inputs.path }}/test-report
+        APP_SERVER_LOG_DIR=${{ github.workspace }}/${{ inputs.path }}/test_report/logs/app-server
+        TEST_SERVER_LOG_DIR=${{ github.workspace }}/${{ inputs.path }}/test_report/logs/test-server
+
+        echo "REPORT_DIR=$REPORT_DIR" | tee -a "$GITHUB_OUTPUT" "$GITHUB_ENV"
+        echo "APP_SERVER_LOG_DIR=$APP_SERVER_LOG_DIR" | tee -a "$GITHUB_OUTPUT" "$GITHUB_ENV"
+        echo "TEST_SERVER_LOG_DIR=$TEST_SERVER_LOG_DIR" | tee -a "$GITHUB_OUTPUT" "$GITHUB_ENV"
+
+        mkdir -p $REPORT_DIR
+        mkdir -p $APP_SERVER_LOG_DIR
+        mkdir -p $TEST_SERVER_LOG_DIR
+
+        # Replace `/` with `__` in check name suffix for artifact names
+        VALID_CHECK_NAME=$(echo '${{ inputs.check-name-suffix }}' | sed "s|/|__|g")
+        echo "VALID_CHECK_NAME=$VALID_CHECK_NAME" | tee -a "$GITHUB_ENV"
+
     - uses: actions/checkout@v4
       with:
         repository: supertokens/supertokens-website
@@ -90,7 +111,7 @@ runs:
         node . &
 
         if [ "${{ inputs.start-cross-domain-server }}" == 'true' ]; then
-          NODE_PORT=8082 node . &
+          NODE_PORT=8082 node .  &> ${{ env.TEST_SERVER_LOG_DIR }}/test-server.log &
         fi
 
     - name: Wait for servers
@@ -132,7 +153,22 @@ runs:
       shell: bash
       # Doing it in the shell since the Reporter's `transformers` don't seem to work
       # run: sed -i "s|$GITHUB_WORKSPACE/${{ inputs.path }}/test||g" test-results.xml
-      run: sed -i "s|${{ github.workspace }}/${{ inputs.path }}/test||g" test-report/test-results.xml
+      run: |
+        sed -i "s|${{ github.workspace }}/${{ inputs.path }}/test||g" test-report/test-results.xml
+        cp test-report/test-results.xml ${{ env.REPORT_DIR }}
+
+    - if: failure() && inputs.app-server-logs != ''
+      name: Copy app server logs
+      shell: bash
+      run: |
+        cp -r ${{ inputs.app-server-logs }} ${{ env.APP_SERVER_LOG_DIR }}
+
+    - if: failure()
+      name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Website Tests ${{ env.VALID_CHECK_NAME }}
+        path: ${{ env.REPORT_DIR }}
 
     - if: always()
       name: Reporter
