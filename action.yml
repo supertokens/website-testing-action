@@ -159,7 +159,7 @@ runs:
         sed -i "s|${{ github.workspace }}/${{ inputs.path }}/test||g" test-report/test-results.xml
         cp test-report/test-results.xml ${{ env.REPORT_DIR }}
 
-    - if: inputs.app-server-logs != ''
+    - if: always() && inputs.app-server-logs != ''
       name: Copy app server logs
       shell: bash
       run: |
